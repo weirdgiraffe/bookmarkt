@@ -15,17 +15,14 @@ impl BookmarkImport {
         BookmarkImport { dom: handle }
     }
 
-    pub fn from_file(path: &Path) -> Result<Self, io::Error> {
-        parse_html()
-            .from_utf8()
-            .from_file(path)
-            .and_then(|dom| Ok(Self::new(dom)))
+    pub fn from_file(path: &Path) -> NodeRef {
+        parse_html().from_utf8().from_file(path).unwrap()
     }
 }
 
 fn main() {
     println!(
         "{:?}",
-        BookmarkImport::from_file(Path::new("./res/sample.html"))
+        BookmarkImport::from_file(Path::new("./res/netscape.html")).to_string()
     );
 }
