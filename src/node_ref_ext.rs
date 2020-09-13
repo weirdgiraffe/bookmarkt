@@ -1,7 +1,10 @@
-use kuchiki::NodeRef;
+use kuchiki::{Attribute, NodeRef};
 
+/// Augments the [NodeRef] struct with conveniant helpers
 pub trait NodeRefExt {
     fn select_text(&self, selector: &str) -> Option<String>;
+    fn is_element(&self, local_name: &str) -> bool;
+    fn get_attribute(&self, tag_name: &str) -> Option<Attribute>;
 }
 
 impl NodeRefExt for NodeRef {
@@ -20,6 +23,61 @@ impl NodeRefExt for NodeRef {
 
         content
     }
+
+    fn is_element(&self, tag_name: &str) -> bool {
+        let mut is_element = false;
+
+        if let Some(element) = self.as_element() {
+            let local_name = &element.name.local;
+
+            if local_name.to_ascii_uppercase() == tag_name.to_uppercase() {
+                is_element = true
+            }
+        }
+
+        is_element
+    }
+
+    fn get_attribute(&self, attribute_name: &str) -> Option<Attribute> {
+        let mut attribute = None;
+
+        if let Some(element) = self.as_element() {
+            let attributes = element.attributes.borrow();
+
+            for (exp_name, attr) in &attributes.map {
+                if exp_name.local.to_ascii_uppercase() == attribute_name.to_uppercase() {
+                    attribute = Some(attr.clone());
+                }
+            }
+        }
+
+        attribute
+    }
+}
+
+#[test]
+fn check_dl_element() {
+    use kuchiki::parse_html;
+    use kuchiki::traits::TendrilSink;
+
+    let dl = parse_html().one(r"<DL></DL>").select_first("DL").unwrap();
+
+    assert_eq!(dl.as_node().is_element("DL"), true);
+    assert_eq!(dl.as_node().is_element("DT"), false);
+}
+
+#[test]
+fn get_href_attribute() {
+    use kuchiki::parse_html;
+    use kuchiki::traits::TendrilSink;
+
+    let a = parse_html()
+        .one(r#"<A HREF="Test"/>"#)
+        .select_first("A")
+        .unwrap();
+
+    let attribute = a.as_node().get_attribute("HREF").unwrap();
+    assert_eq!(attribute.value, "Test")
 }
 
 #[test]
