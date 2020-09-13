@@ -1,39 +1,19 @@
+use std::io::Error;
+use std::path::Path;
+
 use kuchiki::parse_html;
 use kuchiki::traits::TendrilSink;
 use kuchiki::NodeRef;
 
-use std::io::Error;
-use std::path::Path;
+use crate::node_ref_ext::*;
+
+const TITLE_SELECTOR: &str = "TITLE";
+const H1_SELECTOR: &str = "H1";
 
 #[derive(Debug)]
 pub struct NetscapeBookmark {
     pub title: String,
     pub h1: String,
-}
-
-const TITLE_SELECTOR: &str = "TITLE";
-const H1_SELECTOR: &str = "H1";
-
-pub trait NodeRefExt {
-    fn select_text(&self, selector: &str) -> Option<String>;
-}
-
-impl NodeRefExt for NodeRef {
-    fn select_text(&self, selector: &str) -> Option<String> {
-        let mut content = None;
-
-        if let Ok(selection) = self.select(selector) {
-            let nodes = selection.collect::<Vec<_>>();
-
-            if let Some(child) = nodes[0].as_node().first_child() {
-                if let Some(text) = child.as_text() {
-                    content = Some(String::from(&**text.borrow()));
-                }
-            }
-        }
-
-        content
-    }
 }
 
 impl NetscapeBookmark {
@@ -75,14 +55,6 @@ impl NetscapeBookmark {
     pub fn to_string(&self) -> String {
         String::new()
     }
-}
-
-const NETSCAPE_FILE: &str = "./res/netscape.html";
-
-fn main() {
-    let path = Path::new(NETSCAPE_FILE);
-    let bookmarkt = NetscapeBookmark::from_file(path).unwrap();
-    println!("{:?}", bookmarkt);
 }
 
 #[test]

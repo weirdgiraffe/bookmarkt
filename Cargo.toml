@@ -1,6 +1,6 @@
 [package]
 name = "bookmarkt"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["vlnk <vlnk@protonmail.com>"]
 edition = "2018"
 
