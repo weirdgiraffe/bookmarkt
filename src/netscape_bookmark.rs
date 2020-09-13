@@ -7,9 +7,6 @@ use kuchiki::NodeRef;
 
 use crate::node_ref_ext::*;
 
-const TITLE_SELECTOR: &str = "TITLE";
-const H1_SELECTOR: &str = "H1";
-
 #[derive(Debug)]
 pub struct NetscapeBookmark {
     pub title: String,
@@ -28,11 +25,11 @@ impl NetscapeBookmark {
         let mut title = String::new();
         let mut h1 = String::new();
 
-        if let Some(content) = node.select_text(TITLE_SELECTOR) {
+        if let Some(content) = node.select_text("TITLE") {
             title = content
         }
 
-        if let Some(content) = node.select_text(H1_SELECTOR) {
+        if let Some(content) = node.select_text("H1") {
             h1 = content
         }
 
