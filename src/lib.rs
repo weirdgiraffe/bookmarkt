@@ -1,3 +1,4 @@
+pub mod bookmark;
 pub mod netscape;
 mod node_ref_ext;
 
