@@ -1,4 +1,4 @@
-pub mod netscape_bookmark;
+pub mod netscape;
 mod node_ref_ext;
 
-pub use netscape_bookmark::NetscapeBookmark;
+pub use netscape::Netscape;

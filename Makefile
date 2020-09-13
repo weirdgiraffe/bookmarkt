@@ -8,7 +8,7 @@ test:
 
 .PHONY: doc
 doc:
-	cargo doc
+	cargo doc --open
 
 .PHONY: clean
 clean:
