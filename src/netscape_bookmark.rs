@@ -7,20 +7,13 @@ use kuchiki::NodeRef;
 
 use crate::node_ref_ext::*;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct NetscapeBookmark {
     pub title: String,
     pub h1: String,
 }
 
 impl NetscapeBookmark {
-    pub fn new(title: String, h1: String) -> Self {
-        NetscapeBookmark {
-            title: title,
-            h1: h1,
-        }
-    }
-
     pub fn from_node(node: NodeRef) -> Result<Self, Error> {
         let mut title = String::new();
         let mut h1 = String::new();
@@ -33,7 +26,10 @@ impl NetscapeBookmark {
             h1 = content
         }
 
-        Ok(NetscapeBookmark::new(title, h1))
+        Ok(NetscapeBookmark {
+            title: title,
+            h1: h1,
+        })
     }
 
     pub fn from_string(raw: &str) -> Result<Self, Error> {
@@ -46,11 +42,16 @@ impl NetscapeBookmark {
             .from_utf8()
             .from_file(path)
             .and_then(|node| NetscapeBookmark::from_node(node))
-            .and_then(|netscape| Ok(netscape))
     }
 
     pub fn to_string(&self) -> String {
         String::new()
+    }
+}
+
+impl PartialEq for NetscapeBookmark {
+    fn eq(&self, other: &Self) -> bool {
+        self.title == other.title && self.h1 == other.h1
     }
 }
 
@@ -65,6 +66,23 @@ fn parse_netscape_header() {
     <H1>Collection Head</H1>
 ";
     let netscape = NetscapeBookmark::from_string(html).unwrap();
+
     assert_eq!(netscape.title, "Collection Title");
     assert_eq!(netscape.h1, "Collection Head");
+}
+
+#[test]
+fn parse_netscape_file() {
+    use std::path::Path;
+
+    let path = Path::new("./res/netscape.html");
+    let label = String::from("Bookmarks");
+
+    assert_eq!(
+        NetscapeBookmark::from_file(path).unwrap(),
+        NetscapeBookmark {
+            title: label.clone(),
+            h1: label
+        }
+    );
 }
