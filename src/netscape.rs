@@ -49,7 +49,7 @@ impl Netscape {
             for data in selection.collect::<Vec<_>>() {
                 let dt = data.as_node();
 
-                if let Ok(bookmark) = Bookmark::from_node(&dt) {
+                if let Some(bookmark) = Bookmark::from_node(&dt) {
                     bookmarks.push(bookmark)
                 } else if let Some(folder) = Folder::from_node(&dt) {
                     folders.push(folder)

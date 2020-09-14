@@ -1,5 +1,4 @@
 use kuchiki::NodeRef;
-use std::io::{Error, ErrorKind};
 
 use crate::node_ref_ext::*;
 
@@ -17,10 +16,15 @@ pub struct Bookmark {
 }
 
 impl Bookmark {
-    pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
+    pub fn from_node(node: &NodeRef) -> Option<Self> {
+        let mut bookmark = None;
         let mut builder = BookmarkBuilder::default();
 
-        if node.is_element("A") {
+        if node.is_element("DT") {
+            if let Ok(a) = node.select_first("A") {
+                bookmark = Bookmark::from_node(&a.as_node());
+            }
+        } else if node.is_element("A") {
             if let Some(attribute) = node.select_attribute("HREF") {
                 builder.href(attribute.value);
             }
@@ -38,15 +42,13 @@ impl Bookmark {
             }
 
             builder.name(node.text_contents());
-        } else if node.is_element("DT") {
-            if let Ok(a) = node.select_first("A") {
-                return Bookmark::from_node(&a.as_node());
+
+            if let Ok(built) = builder.build() {
+                bookmark = Some(built);
             }
         }
 
-        builder
-            .build()
-            .or_else(|msg| Err(Error::new(ErrorKind::InvalidInput, msg)))
+        bookmark
     }
 }
 

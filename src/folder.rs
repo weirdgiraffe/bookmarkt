@@ -24,9 +24,7 @@ impl Folder {
                 folder = Folder::from_node(&h3.as_node());
             }
         } else if node.is_element("H3") {
-            let mut bookmarks = vec![];
             let mut builder = FolderBuilder::default();
-            let mut folders = vec![];
 
             if let Some(attribute) = node.select_attribute("ADD_DATE") {
                 builder.add_date(attribute.value);
@@ -36,17 +34,20 @@ impl Folder {
 
             for sibling in node.following_siblings() {
                 if sibling.is_element("DL") {
+                    let mut bookmarks = vec![];
+                    let mut folders = vec![];
+
                     for child in sibling.children() {
-                        if let Ok(item) = Bookmark::from_node(&child) {
+                        if let Some(item) = Bookmark::from_node(&child) {
                             bookmarks.push(item)
                         } else if let Some(item) = Folder::from_node(&child) {
                             folders.push(item)
                         }
                     }
+
+                    builder.bookmarks(bookmarks).folders(folders);
                 }
             }
-
-            builder.bookmarks(bookmarks).folders(folders);
 
             if let Ok(built) = builder.build() {
                 folder = Some(built);
