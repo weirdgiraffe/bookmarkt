@@ -4,7 +4,7 @@ use kuchiki::{Attribute, NodeRef};
 pub trait NodeRefExt {
     fn select_text(&self, selector: &str) -> Option<String>;
     fn is_element(&self, local_name: &str) -> bool;
-    fn get_attribute(&self, tag_name: &str) -> Option<Attribute>;
+    fn select_attribute(&self, tag_name: &str) -> Option<Attribute>;
 }
 
 impl NodeRefExt for NodeRef {
@@ -15,9 +15,7 @@ impl NodeRefExt for NodeRef {
             let nodes = selection.collect::<Vec<_>>();
 
             if let Some(child) = nodes[0].as_node().first_child() {
-                if let Some(text) = child.as_text() {
-                    content = Some(String::from(&**text.borrow()));
-                }
+                content = Some(child.text_contents());
             }
         }
 
@@ -38,7 +36,7 @@ impl NodeRefExt for NodeRef {
         is_element
     }
 
-    fn get_attribute(&self, attribute_name: &str) -> Option<Attribute> {
+    fn select_attribute(&self, attribute_name: &str) -> Option<Attribute> {
         let mut attribute = None;
 
         if let Some(element) = self.as_element() {
@@ -67,7 +65,7 @@ fn check_dl_element() {
 }
 
 #[test]
-fn get_href_attribute() {
+fn select_href_attribute() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
@@ -76,7 +74,7 @@ fn get_href_attribute() {
         .select_first("A")
         .unwrap();
 
-    let attribute = a.as_node().get_attribute("HREF").unwrap();
+    let attribute = a.as_node().select_attribute("HREF").unwrap();
     assert_eq!(attribute.value, "Test")
 }
 
