@@ -3,7 +3,7 @@ use std::io::{Error, ErrorKind};
 
 use crate::node_ref_ext::*;
 
-#[derive(Builder, Debug, Default)]
+#[derive(Builder, Clone, Debug, Default)]
 #[builder(setter(into))]
 pub struct Bookmark {
     href: String,
@@ -20,27 +20,27 @@ impl Bookmark {
     pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
         let mut builder = BookmarkBuilder::default();
 
-        if node.is_element("DT") {
-            if let Ok(data) = node.select_first("A") {
-                let a = data.as_node();
+        if node.is_element("A") {
+            if let Some(attribute) = node.select_attribute("HREF") {
+                builder.href(attribute.value);
+            }
 
-                if let Some(attribute) = a.select_attribute("HREF") {
-                    builder.href(attribute.value);
-                }
+            if let Some(attribute) = node.select_attribute("ADD_DATE") {
+                builder.add_date(attribute.value);
+            }
 
-                if let Some(attribute) = a.select_attribute("ADD_DATE") {
-                    builder.add_date(attribute.value);
-                }
+            if let Some(attribute) = node.select_attribute("LAST_VISIT") {
+                builder.last_visit(attribute.value);
+            }
 
-                if let Some(attribute) = a.select_attribute("LAST_VISIT") {
-                    builder.last_visit(attribute.value);
-                }
+            if let Some(attribute) = node.select_attribute("LAST_MODIFIED") {
+                builder.last_modified(attribute.value);
+            }
 
-                if let Some(attribute) = a.select_attribute("LAST_MODIFIED") {
-                    builder.last_modified(attribute.value);
-                }
-
-                builder.name(a.text_contents());
+            builder.name(node.text_contents());
+        } else if node.is_element("DT") {
+            if let Ok(a) = node.select_first("A") {
+                return Bookmark::from_node(&a.as_node());
             }
         }
 
@@ -61,17 +61,17 @@ impl PartialEq for Bookmark {
 }
 
 #[test]
-fn parse_netscape_item() {
+fn parse_netscape_bookmark() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
     let item = r#"
 <DT><A HREF="url" ADD_DATE="date" LAST_VISIT="date"
 LAST_MODIFIED="date">name</A>"#;
-    let dl = parse_html().one(item).select_first("DT").unwrap();
+    let a = parse_html().one(item).select_first("A").unwrap();
 
     assert_eq!(
-        Bookmark::from_node(&dl.as_node()).unwrap(),
+        Bookmark::from_node(&a.as_node()).unwrap(),
         Bookmark {
             href: String::from("url"),
             add_date: String::from("date"),

@@ -6,6 +6,7 @@ use kuchiki::traits::TendrilSink;
 use kuchiki::NodeRef;
 
 use crate::bookmark::Bookmark;
+use crate::folder::Folder;
 use crate::node_ref_ext::*;
 
 /// Implements the [`Netscape Bookmark File format`].
@@ -26,6 +27,7 @@ pub struct Netscape {
     pub title: String,
     pub h1: String,
     pub bookmarks: Vec<Bookmark>,
+    pub folders: Vec<Folder>,
 }
 
 impl Netscape {
@@ -33,6 +35,7 @@ impl Netscape {
         let mut title = String::new();
         let mut h1 = String::new();
         let mut bookmarks = vec![];
+        let mut folders = vec![];
 
         if let Some(content) = node.select_text("TITLE") {
             title = content
@@ -43,9 +46,13 @@ impl Netscape {
         }
 
         if let Ok(selection) = node.select("DL > DT") {
-            for dt in selection.collect::<Vec<_>>() {
-                if let Ok(bookmark) = Bookmark::from_node(&dt.as_node()) {
+            for data in selection.collect::<Vec<_>>() {
+                let dt = data.as_node();
+
+                if let Ok(bookmark) = Bookmark::from_node(&dt) {
                     bookmarks.push(bookmark)
+                } else if let Some(folder) = Folder::from_node(&dt) {
+                    folders.push(folder)
                 }
             }
         }
@@ -54,6 +61,7 @@ impl Netscape {
             title: title,
             h1: h1,
             bookmarks: bookmarks,
+            folders: folders,
         })
     }
 
@@ -108,6 +116,7 @@ fn parse_netscape_file() {
         Netscape {
             title: label.clone(),
             h1: label,
+            folders: vec![],
             bookmarks: vec![
                 BookmarkBuilder::default()
                     .href("https://framasoft.org/")
