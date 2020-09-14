@@ -5,6 +5,7 @@ use kuchiki::parse_html;
 use kuchiki::traits::TendrilSink;
 use kuchiki::NodeRef;
 
+use crate::bookmark::Bookmark;
 use crate::node_ref_ext::*;
 
 /// Implements the [`Netscape Bookmark File format`].
@@ -24,12 +25,14 @@ use crate::node_ref_ext::*;
 pub struct Netscape {
     pub title: String,
     pub h1: String,
+    pub bookmarks: Vec<Bookmark>,
 }
 
 impl Netscape {
     pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
         let mut title = String::new();
         let mut h1 = String::new();
+        let mut bookmarks = vec![];
 
         if let Some(content) = node.select_text("TITLE") {
             title = content
@@ -39,9 +42,18 @@ impl Netscape {
             h1 = content
         }
 
+        if let Ok(selection) = node.select("DL > DT") {
+            for dt in selection.collect::<Vec<_>>() {
+                if let Ok(bookmark) = Bookmark::from_node(&dt.as_node()) {
+                    bookmarks.push(bookmark)
+                }
+            }
+        }
+
         Ok(Netscape {
             title: title,
             h1: h1,
+            bookmarks: bookmarks,
         })
     }
 
@@ -64,7 +76,7 @@ impl Netscape {
 
 impl PartialEq for Netscape {
     fn eq(&self, other: &Self) -> bool {
-        self.title == other.title && self.h1 == other.h1
+        self.title == other.title && self.h1 == other.h1 && self.bookmarks == other.bookmarks
     }
 }
 
@@ -85,6 +97,7 @@ fn parse_netscape_header() {
 
 #[test]
 fn parse_netscape_file() {
+    use crate::bookmark::BookmarkBuilder;
     use std::path::Path;
 
     let path = Path::new("./res/netscape.html");
@@ -94,7 +107,21 @@ fn parse_netscape_file() {
         Netscape::from_file(path).unwrap(),
         Netscape {
             title: label.clone(),
-            h1: label
+            h1: label,
+            bookmarks: vec![
+                BookmarkBuilder::default()
+                    .href("https://framasoft.org/")
+                    .add_date("1466009059")
+                    .name("Framasoft ~ Page portail du réseau")
+                    .build()
+                    .unwrap(),
+                BookmarkBuilder::default()
+                    .href("https://www.kernel.org/")
+                    .add_date("1466009167")
+                    .name("The Linux Kernel Archives")
+                    .build()
+                    .unwrap()
+            ]
         }
     );
 }
