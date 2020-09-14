@@ -1,56 +1,52 @@
 use kuchiki::NodeRef;
-use std::io::Error;
+use std::io::{Error, ErrorKind};
 
 use crate::node_ref_ext::*;
 
-#[derive(Debug, Default)]
+#[derive(Builder, Debug, Default)]
+#[builder(setter(into))]
 pub struct Bookmark {
     href: String,
-    add_date: String,
-    last_visit: String,
-    last_modified: String,
     name: String,
+    #[builder(default)]
+    add_date: String,
+    #[builder(default)]
+    last_visit: String,
+    #[builder(default)]
+    last_modified: String,
 }
 
 impl Bookmark {
-    fn from_node(node: &NodeRef) -> Result<Self, Error> {
-        let mut href = String::new();
-        let mut add_date = String::new();
-        let mut last_visit = String::new();
-        let mut last_modified = String::new();
-        let mut name = String::new();
+    pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
+        let mut builder = BookmarkBuilder::default();
 
         if node.is_element("DT") {
             if let Ok(data) = node.select_first("A") {
                 let a = data.as_node();
 
-                if let Some(attribute) = a.get_attribute("HREF") {
-                    href = attribute.value
+                if let Some(attribute) = a.select_attribute("HREF") {
+                    builder.href(attribute.value);
                 }
 
-                if let Some(attribute) = a.get_attribute("ADD_DATE") {
-                    add_date = attribute.value
+                if let Some(attribute) = a.select_attribute("ADD_DATE") {
+                    builder.add_date(attribute.value);
                 }
 
-                if let Some(attribute) = a.get_attribute("LAST_VISIT") {
-                    last_visit = attribute.value
+                if let Some(attribute) = a.select_attribute("LAST_VISIT") {
+                    builder.last_visit(attribute.value);
                 }
 
-                if let Some(attribute) = a.get_attribute("LAST_MODIFIED") {
-                    last_modified = attribute.value
+                if let Some(attribute) = a.select_attribute("LAST_MODIFIED") {
+                    builder.last_modified(attribute.value);
                 }
 
-                name = a.text_contents();
+                builder.name(a.text_contents());
             }
         }
 
-        Ok(Bookmark {
-            href: href,
-            add_date: add_date,
-            last_visit: last_visit,
-            last_modified: last_modified,
-            name: name,
-        })
+        builder
+            .build()
+            .or_else(|msg| Err(Error::new(ErrorKind::InvalidInput, msg)))
     }
 }
 
