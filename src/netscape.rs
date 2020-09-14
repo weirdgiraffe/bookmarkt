@@ -9,7 +9,7 @@ use crate::bookmark::Bookmark;
 use crate::folder::Folder;
 use crate::node_ref_ext::*;
 
-/// Implements the [`Netscape Bookmark File format`].
+/// Implements the [Netscape Bookmark File format].
 ///
 /// The [Netscape] parses the header of a Bookmark file, it gets the content of the tags
 /// `title` and `h1` that are expected to the first tags of a bookmark document.
@@ -21,7 +21,7 @@ use crate::node_ref_ext::*;
 ///
 /// This parser isn't strict and will not fail if the specification isn't respected : it implements [Default] trait.
 ///
-/// [`Netscape Bookmark File format`]: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN
+/// [Netscape Bookmark File format]: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN
 #[derive(Debug, Default)]
 pub struct Netscape {
     pub title: String,

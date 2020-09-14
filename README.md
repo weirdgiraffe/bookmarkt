@@ -1,6 +1,8 @@
 # Bookmarkt
 
-A library to parse Netscape bookmarks. A subtile *mélange* beetween *bookmark* and *book mart*.
+A Netscape Bookmark File parser.
+
+The name is a subtile *mélange* between *bookmark* and *book mart*. It also works as a mashup with the english *book* and the german *markt*.
 
 ## References
 
