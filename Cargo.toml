@@ -3,6 +3,8 @@ name = "bookmarkt"
 version = "0.0.1"
 authors = ["vlnk <vlnk@protonmail.com>"]
 edition = "2018"
+license = "GPL-3.0-or-later"
+description = "A Netscape Bookmark File format parser"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
