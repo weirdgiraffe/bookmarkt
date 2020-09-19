@@ -1,16 +1,11 @@
 # See CI documentation: https://doc.rust-lang.org/cargo/guide/continuous-integration.html#buildssrht
 image: debian/stable
 packages:
-    - rustup
+    - rust
 sources:
     - https://git.sr.ht/~vlnk/bookmarkt
 tasks:
-    - setup: |
-        rustup toolchain install stable
-        cd bookmarkt
-        rustup run stable cargo fetch
     - stable: |
-        rustup default stable
         cd bookmarkt
         cargo build --verbose
         cargo test --verbose
