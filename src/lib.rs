@@ -10,10 +10,11 @@
 //!
 //! ```rust
 //! use bookmarkt::netscape::Netscape;
+//! use serde_json;
 //! use std::path::Path;
 //!
-//! let parsed = Netscape::from_file(Path::new("./res/netscape.html"));
-//! println!("{:?}", parsed);
+//! let parsed = Netscape::from_file(Path::new("./res/netscape.html")).unwrap();
+//! println!("{:?}", serde_json::to_string(&parsed).unwrap());
 //! ```
 //!
 //! # Acknowledgment

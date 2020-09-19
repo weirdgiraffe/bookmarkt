@@ -1,8 +1,9 @@
 use kuchiki::NodeRef;
+use serde::Serialize;
 
 use crate::node_ref_ext::*;
 
-#[derive(Builder, Clone, Debug, Default)]
+#[derive(Serialize, Builder, Clone, Debug, Default)]
 #[builder(setter(into))]
 pub struct Bookmark {
     href: String,
@@ -82,4 +83,18 @@ LAST_MODIFIED="date">name</A>"#;
             name: String::from("name")
         }
     )
+}
+
+#[test]
+fn serialize_json_bookmark() {
+    let json = r#"{"href":"url","name":"name","add_date":"date","last_visit":"date","last_modified":"date"}"#;
+    let bookmark = Bookmark {
+        href: String::from("url"),
+        add_date: String::from("date"),
+        last_visit: String::from("date"),
+        last_modified: String::from("date"),
+        name: String::from("name"),
+    };
+
+    assert_eq!(serde_json::to_string(&bookmark).unwrap(), json)
 }

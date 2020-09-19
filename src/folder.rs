@@ -1,9 +1,10 @@
 use kuchiki::NodeRef;
+use serde::Serialize;
 
 use crate::bookmark::Bookmark;
 use crate::node_ref_ext::*;
 
-#[derive(Clone, Builder, Debug, Default)]
+#[derive(Serialize, Clone, Builder, Debug, Default)]
 #[builder(setter(into))]
 pub struct Folder {
     title: String,
@@ -127,4 +128,17 @@ fn parse_netscape_nested_folders() {
             .build()
             .unwrap()
     )
+}
+
+#[test]
+fn serialize_json_folder() {
+    let json = r#"{"title":"title","add_date":"date","bookmarks":[],"folders":[]}"#;
+    let folder = Folder {
+        title: String::from("title"),
+        add_date: String::from("date"),
+        bookmarks: vec![],
+        folders: vec![],
+    };
+
+    assert_eq!(serde_json::to_string(&folder).unwrap(), json)
 }

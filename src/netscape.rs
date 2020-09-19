@@ -5,6 +5,8 @@ use kuchiki::parse_html;
 use kuchiki::traits::TendrilSink;
 use kuchiki::NodeRef;
 
+use serde::Serialize;
+
 use crate::bookmark::Bookmark;
 use crate::folder::Folder;
 use crate::node_ref_ext::*;
@@ -22,7 +24,7 @@ use crate::node_ref_ext::*;
 /// This parser isn't strict and will not fail if the specification isn't respected : it implements [Default] trait.
 ///
 /// [Netscape Bookmark File format]: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN
-#[derive(Debug, Default)]
+#[derive(Serialize, Debug, Default)]
 pub struct Netscape {
     pub title: String,
     pub h1: String,
@@ -133,4 +135,20 @@ fn parse_netscape_file() {
             ]
         }
     );
+}
+
+#[test]
+fn serialize_json_netscape() {
+    let b1 = r#"{"href":"https://framasoft.org/","name":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":""}"#;
+    let b2 = r#"{"href":"https://www.kernel.org/","name":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":""}"#;
+
+    let json = format!(
+        r#"{{"title":"Bookmarks","h1":"Bookmarks","bookmarks":[{},{}],"folders":[]}}"#,
+        b1, b2
+    );
+
+    let path = Path::new("./res/netscape.html");
+    let netscape = Netscape::from_file(path).unwrap();
+
+    assert_eq!(serde_json::to_string(&netscape).unwrap(), json)
 }
