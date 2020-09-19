@@ -1,5 +1,5 @@
 # See CI documentation: https://doc.rust-lang.org/cargo/guide/continuous-integration.html#buildssrht
-image: alpine/latest
+image: debian/stable
 packages:
     - rustup
 sources:
@@ -11,6 +11,6 @@ tasks:
         rustup run stable cargo fetch
     - stable: |
         rustup default stable
-        cd <your project>/
+        cd bookmarkt
         cargo build --verbose
         cargo test --verbose
