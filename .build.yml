@@ -8,9 +8,9 @@ tasks:
     - setup: |
         rustup toolchain install nightly
         cd bookmarkt
-        rustup run stable cargo fetch
-    - stable: |
-        rustup default stable
+        rustup run nightly cargo fetch
+    - nightly: |
+        rustup default nightly
         cd bookmarkt
         cargo build --verbose
         cargo test --verbose
