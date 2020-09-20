@@ -1,4 +1,5 @@
 # Bookmarkt
+[![builds.sr.ht status](https://builds.sr.ht/~vlnk/bookmarkt/commits.svg)](https://builds.sr.ht/~vlnk/bookmarkt/commits?)
 
 A Netscape Bookmark File parser.
 
