@@ -12,6 +12,7 @@ The name is a subtile *mélange* between *bookmark* and *book mart*. It also wor
 + [Crates home](https://crates.io/crates/bookmarkt)
 + [Issue tracker](https://todo.sr.ht/~vlnk/bookmarkt)
 + [CI status](https://builds.sr.ht/~vlnk/bookmarkt/commits?)
++ [Source repository](https://git.sr.ht/~vlnk/bookmarkt)
 
 ## Acknowledgment
 ### References
