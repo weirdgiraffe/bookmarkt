@@ -1,7 +1,7 @@
 use kuchiki::NodeRef;
 use serde::Serialize;
 
-use crate::bookmark::Bookmark;
+use crate::netscape_item::NetscapeItem;
 use crate::node_ref_ext::*;
 
 #[derive(Serialize, Clone, Builder, Debug, Default)]
@@ -11,9 +11,7 @@ pub struct Folder {
     #[builder(default)]
     add_date: String,
     #[builder(default)]
-    bookmarks: Vec<Bookmark>,
-    #[builder(default)]
-    folders: Vec<Folder>,
+    children: Vec<NetscapeItem>,
 }
 
 impl Folder {
@@ -35,18 +33,15 @@ impl Folder {
 
             for sibling in node.following_siblings() {
                 if sibling.is_element("DL") {
-                    let mut bookmarks = vec![];
-                    let mut folders = vec![];
+                    let mut children = vec![];
 
                     for child in sibling.children() {
-                        if let Some(item) = Bookmark::from_node(&child) {
-                            bookmarks.push(item)
-                        } else if let Some(item) = Folder::from_node(&child) {
-                            folders.push(item)
+                        if let Some(item) = NetscapeItem::from_node(&child) {
+                            children.push(item)
                         }
                     }
 
-                    builder.bookmarks(bookmarks).folders(folders);
+                    builder.children(children);
                 }
             }
 
@@ -63,8 +58,7 @@ impl PartialEq for Folder {
     fn eq(&self, other: &Self) -> bool {
         self.add_date == other.add_date
             && self.title == other.title
-            && self.bookmarks == other.bookmarks
-            && self.folders == other.folders
+            && self.children == other.children
     }
 }
 
@@ -84,8 +78,7 @@ fn parse_netscape_empty_folder() {
         Folder {
             title: String::from("title"),
             add_date: String::from("date"),
-            bookmarks: vec![],
-            folders: vec![]
+            children: vec![]
         }
     )
 }
@@ -108,23 +101,35 @@ fn parse_netscape_nested_folders() {
     </DL><p>"#;
     let dt = parse_html().one(item).select_first("DT").unwrap();
 
+    let n3 = NetscapeItem::Subfolder(
+        FolderBuilder::default()
+            .title("nested3")
+            .children(vec![])
+            .build()
+            .unwrap(),
+    );
+
+    let n2 = NetscapeItem::Subfolder(
+        FolderBuilder::default()
+            .title("nested2")
+            .children(vec![n3])
+            .build()
+            .unwrap(),
+    );
+
+    let n1 = NetscapeItem::Subfolder(
+        FolderBuilder::default()
+            .title("nested1")
+            .children(vec![n2])
+            .build()
+            .unwrap(),
+    );
+
     assert_eq!(
         Folder::from_node(&dt.as_node()).unwrap(),
         FolderBuilder::default()
             .title("nested0")
-            .folders(vec![FolderBuilder::default()
-                .title("nested1")
-                .folders(vec![FolderBuilder::default()
-                    .title("nested2")
-                    .folders(vec![FolderBuilder::default()
-                        .title("nested3")
-                        .folders(vec![])
-                        .build()
-                        .unwrap()])
-                    .build()
-                    .unwrap()])
-                .build()
-                .unwrap()])
+            .children(vec![n1])
             .build()
             .unwrap()
     )
@@ -132,12 +137,11 @@ fn parse_netscape_nested_folders() {
 
 #[test]
 fn serialize_json_folder() {
-    let json = r#"{"title":"title","add_date":"date","bookmarks":[],"folders":[]}"#;
+    let json = r#"{"title":"title","add_date":"date","children":[]}"#;
     let folder = Folder {
         title: String::from("title"),
         add_date: String::from("date"),
-        bookmarks: vec![],
-        folders: vec![],
+        children: vec![],
     };
 
     assert_eq!(serde_json::to_string(&folder).unwrap(), json)

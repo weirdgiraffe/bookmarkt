@@ -7,8 +7,7 @@ use kuchiki::NodeRef;
 
 use serde::Serialize;
 
-use crate::bookmark::Bookmark;
-use crate::folder::Folder;
+use crate::netscape_item::NetscapeItem;
 use crate::node_ref_ext::*;
 
 /// Implements the [Netscape Bookmark File format].
@@ -24,20 +23,28 @@ use crate::node_ref_ext::*;
 /// This parser isn't strict and will not fail if the specification isn't respected : it implements [Default] trait.
 ///
 /// [Netscape Bookmark File format]: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Debug)]
 pub struct Netscape {
     pub title: String,
     pub h1: String,
-    pub bookmarks: Vec<Bookmark>,
-    pub folders: Vec<Folder>,
+    pub children: Vec<NetscapeItem>,
+}
+
+impl Default for Netscape {
+    fn default() -> Self {
+        Netscape {
+            title: String::from(""),
+            h1: String::from(""),
+            children: vec![],
+        }
+    }
 }
 
 impl Netscape {
     pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
         let mut title = String::new();
         let mut h1 = String::new();
-        let mut bookmarks = vec![];
-        let mut folders = vec![];
+        let mut children = vec![];
 
         if let Some(content) = node.select_text("TITLE") {
             title = content
@@ -51,10 +58,8 @@ impl Netscape {
             for data in selection.collect::<Vec<_>>() {
                 let dt = data.as_node();
 
-                if let Some(bookmark) = Bookmark::from_node(&dt) {
-                    bookmarks.push(bookmark)
-                } else if let Some(folder) = Folder::from_node(&dt) {
-                    folders.push(folder)
+                if let Some(item) = NetscapeItem::from_node(&dt) {
+                    children.push(item)
                 }
             }
         }
@@ -62,8 +67,7 @@ impl Netscape {
         Ok(Netscape {
             title: title,
             h1: h1,
-            bookmarks: bookmarks,
-            folders: folders,
+            children: children,
         })
     }
 
@@ -86,7 +90,7 @@ impl Netscape {
 
 impl PartialEq for Netscape {
     fn eq(&self, other: &Self) -> bool {
-        self.title == other.title && self.h1 == other.h1 && self.bookmarks == other.bookmarks
+        self.title == other.title && self.h1 == other.h1 && self.children == other.children
     }
 }
 
@@ -118,20 +122,23 @@ fn parse_netscape_file() {
         Netscape {
             title: label.clone(),
             h1: label,
-            folders: vec![],
-            bookmarks: vec![
-                BookmarkBuilder::default()
-                    .href("https://framasoft.org/")
-                    .add_date("1466009059")
-                    .name("Framasoft ~ Page portail du réseau")
-                    .build()
-                    .unwrap(),
-                BookmarkBuilder::default()
-                    .href("https://www.kernel.org/")
-                    .add_date("1466009167")
-                    .name("The Linux Kernel Archives")
-                    .build()
-                    .unwrap()
+            children: vec![
+                NetscapeItem::Shortcut(
+                    BookmarkBuilder::default()
+                        .href("https://framasoft.org/")
+                        .add_date("1466009059")
+                        .name("Framasoft ~ Page portail du réseau")
+                        .build()
+                        .unwrap()
+                ),
+                NetscapeItem::Shortcut(
+                    BookmarkBuilder::default()
+                        .href("https://www.kernel.org/")
+                        .add_date("1466009167")
+                        .name("The Linux Kernel Archives")
+                        .build()
+                        .unwrap()
+                )
             ]
         }
     );
@@ -143,7 +150,7 @@ fn serialize_json_netscape() {
     let b2 = r#"{"href":"https://www.kernel.org/","name":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":""}"#;
 
     let json = format!(
-        r#"{{"title":"Bookmarks","h1":"Bookmarks","bookmarks":[{},{}],"folders":[]}}"#,
+        r#"{{"title":"Bookmarks","h1":"Bookmarks","children":[{},{}]}}"#,
         b1, b2
     );
 
