@@ -1,6 +1,6 @@
 # Bookmarkt
 ![builds.sr.ht status](https://builds.sr.ht/~vlnk/bookmarkt/commits.svg)
-![docs.rs](https://docs.rs/bookmarkt/badge.svg?version=0.0.1)
+![docs.rs](https://docs.rs/bookmarkt/badge.svg?version=latest)
 ![Crates.io](https://img.shields.io/crates/v/bookmarkt)
 
 A Netscape Bookmark File parser.
