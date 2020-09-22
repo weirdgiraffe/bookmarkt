@@ -30,16 +30,6 @@ pub struct Netscape {
     pub children: Vec<NetscapeItem>,
 }
 
-impl Default for Netscape {
-    fn default() -> Self {
-        Netscape {
-            title: String::from(""),
-            h1: String::from(""),
-            children: vec![],
-        }
-    }
-}
-
 impl Netscape {
     pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
         let mut title = String::new();
@@ -127,7 +117,7 @@ fn parse_netscape_file() {
                     BookmarkBuilder::default()
                         .href("https://framasoft.org/")
                         .add_date("1466009059")
-                        .name("Framasoft ~ Page portail du réseau")
+                        .title("Framasoft ~ Page portail du réseau")
                         .build()
                         .unwrap()
                 ),
@@ -135,7 +125,7 @@ fn parse_netscape_file() {
                     BookmarkBuilder::default()
                         .href("https://www.kernel.org/")
                         .add_date("1466009167")
-                        .name("The Linux Kernel Archives")
+                        .title("The Linux Kernel Archives")
                         .build()
                         .unwrap()
                 )
@@ -146,8 +136,8 @@ fn parse_netscape_file() {
 
 #[test]
 fn serialize_json_netscape() {
-    let b1 = r#"{"href":"https://framasoft.org/","name":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":""}"#;
-    let b2 = r#"{"href":"https://www.kernel.org/","name":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":""}"#;
+    let b1 = r#"{"href":"https://framasoft.org/","title":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":""}"#;
+    let b2 = r#"{"href":"https://www.kernel.org/","title":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":""}"#;
 
     let json = format!(
         r#"{{"title":"Bookmarks","h1":"Bookmarks","children":[{},{}]}}"#,

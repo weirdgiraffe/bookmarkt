@@ -1,10 +1,12 @@
+use askama::Template;
 use kuchiki::NodeRef;
 use serde::Serialize;
 
 use crate::netscape_item::NetscapeItem;
 use crate::node_ref_ext::*;
 
-#[derive(Serialize, Clone, Builder, Debug, Default)]
+#[derive(Serialize, Clone, Builder, Debug, Default, Template)]
+#[template(path = "folder.html")]
 #[builder(setter(into))]
 pub struct Folder {
     title: String,
@@ -60,6 +62,20 @@ impl PartialEq for Folder {
             && self.title == other.title
             && self.children == other.children
     }
+}
+
+#[test]
+fn render_folder_html() {
+    let rendered = r#"<DT><H3 FOLDED ADD_DATE="date">name</H3>
+<DL><p>
+</DL></p>"#;
+    let folder = Folder {
+        add_date: String::from("date"),
+        title: String::from("name"),
+        children: vec![],
+    };
+
+    assert_eq!(folder.render().unwrap(), rendered);
 }
 
 #[test]
