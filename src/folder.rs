@@ -6,7 +6,7 @@ use crate::netscape_item::NetscapeItem;
 use crate::node_ref_ext::*;
 
 #[derive(Serialize, Clone, Builder, Debug, Default, Template)]
-#[template(path = "folder.html")]
+#[template(path = "folder.j2")]
 #[builder(setter(into))]
 pub struct Folder {
     title: String,

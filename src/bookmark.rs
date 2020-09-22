@@ -6,7 +6,7 @@ use crate::node_ref_ext::*;
 
 #[derive(Serialize, Builder, Clone, Debug, Default, Template)]
 #[builder(setter(into))]
-#[template(path = "bookmark.html")]
+#[template(path = "bookmark.j2")]
 pub struct Bookmark {
     href: String,
     title: String,
