@@ -2,7 +2,7 @@ use askama::Template;
 use kuchiki::NodeRef;
 use serde::Serialize;
 
-use crate::netscape_item::NetscapeItem;
+use crate::item::Item;
 use crate::node_ref_ext::*;
 
 #[derive(Serialize, Clone, Builder, Debug, Default, Template)]
@@ -13,7 +13,7 @@ pub struct Folder {
     #[builder(default)]
     add_date: String,
     #[builder(default)]
-    children: Vec<NetscapeItem>,
+    children: Vec<Item>,
 }
 
 impl Folder {
@@ -38,7 +38,7 @@ impl Folder {
                     let mut children = vec![];
 
                     for child in sibling.children() {
-                        if let Some(item) = NetscapeItem::from_node(&child) {
+                        if let Some(item) = Item::from_node(&child) {
                             children.push(item)
                         }
                     }
@@ -117,7 +117,7 @@ fn parse_netscape_nested_folders() {
     </DL><p>"#;
     let dt = parse_html().one(item).select_first("DT").unwrap();
 
-    let n3 = NetscapeItem::Subfolder(
+    let n3 = Item::Subfolder(
         FolderBuilder::default()
             .title("nested3")
             .children(vec![])
@@ -125,7 +125,7 @@ fn parse_netscape_nested_folders() {
             .unwrap(),
     );
 
-    let n2 = NetscapeItem::Subfolder(
+    let n2 = Item::Subfolder(
         FolderBuilder::default()
             .title("nested2")
             .children(vec![n3])
@@ -133,7 +133,7 @@ fn parse_netscape_nested_folders() {
             .unwrap(),
     );
 
-    let n1 = NetscapeItem::Subfolder(
+    let n1 = Item::Subfolder(
         FolderBuilder::default()
             .title("nested1")
             .children(vec![n2])

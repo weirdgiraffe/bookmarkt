@@ -20,6 +20,7 @@ The name is a subtile *mélange* between *bookmark* and *book mart*. It also wor
 + [html5ever](https://github.com/servo/html5ever)
 + [kuchiki](https://github.com/kuchiki-rs/kuchiki)
 + [scraper](https://github.com/causal-agent/scraper)
++ [askama](https://github.com/djc/askama)
 + [Netscape bookmarks reference](http://fileformats.archiveteam.org/wiki/Netscape_bookmarks)
 + [Netscape Bookmark File format](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN)
 

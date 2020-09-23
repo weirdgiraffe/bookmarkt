@@ -1,0 +1,10 @@
+{%- if !children.is_empty() -%}
+  {%- for child in children -%}
+    {%- match child -%}
+      {%- when Item::Subfolder with (folder) %}
+    {{ folder }}
+      {%- when Item::Shortcut with (bookmark) %}
+    {{ bookmark }}
+    {%- endmatch -%}
+  {%- endfor -%}
+{%- endif -%}

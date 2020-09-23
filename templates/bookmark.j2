@@ -1,1 +1,4 @@
-<DT><A HREF="{{ href }}" ADD_DATE="{{ add_date }}" LAST_VISIT="{{ last_visit }}" LAST_MODIFIED="{{ last_modified }}">{{ title }}</A>
+<DT><A HREF="{{ href }}" ADD_DATE="{{ add_date }}"
+{%- if !last_visit.is_empty() %} LAST_VISIT="{{ last_visit }}"{%- endif -%}
+{%- if !last_modified.is_empty() %} LAST_MODIFIED="{{ last_modified }}"{%- endif -%}
+>{{ title }}</A>

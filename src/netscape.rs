@@ -1,3 +1,4 @@
+use askama::Template;
 use std::io::Error;
 use std::path::Path;
 
@@ -7,7 +8,7 @@ use kuchiki::NodeRef;
 
 use serde::Serialize;
 
-use crate::netscape_item::NetscapeItem;
+use crate::item::Item;
 use crate::node_ref_ext::*;
 
 /// Implements the [Netscape Bookmark File format].
@@ -23,11 +24,12 @@ use crate::node_ref_ext::*;
 /// This parser isn't strict and will not fail if the specification isn't respected : it implements [Default] trait.
 ///
 /// [Netscape Bookmark File format]: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)?redirectedfrom=MSDN
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Template)]
+#[template(path = "netscape.j2", escape = "none")]
 pub struct Netscape {
     pub title: String,
     pub h1: String,
-    pub children: Vec<NetscapeItem>,
+    pub children: Vec<Item>,
 }
 
 impl Netscape {
@@ -48,7 +50,7 @@ impl Netscape {
             for data in selection.collect::<Vec<_>>() {
                 let dt = data.as_node();
 
-                if let Some(item) = NetscapeItem::from_node(&dt) {
+                if let Some(item) = Item::from_node(&dt) {
                     children.push(item)
                 }
             }
@@ -102,36 +104,31 @@ fn parse_netscape_header() {
 #[test]
 fn parse_netscape_file() {
     use crate::bookmark::BookmarkBuilder;
-    use std::path::Path;
 
     let path = Path::new("./res/netscape.html");
     let label = String::from("Bookmarks");
 
-    assert_eq!(
-        Netscape::from_file(path).unwrap(),
-        Netscape {
-            title: label.clone(),
-            h1: label,
-            children: vec![
-                NetscapeItem::Shortcut(
-                    BookmarkBuilder::default()
-                        .href("https://framasoft.org/")
-                        .add_date("1466009059")
-                        .title("Framasoft ~ Page portail du réseau")
-                        .build()
-                        .unwrap()
-                ),
-                NetscapeItem::Shortcut(
-                    BookmarkBuilder::default()
-                        .href("https://www.kernel.org/")
-                        .add_date("1466009167")
-                        .title("The Linux Kernel Archives")
-                        .build()
-                        .unwrap()
-                )
-            ]
-        }
-    );
+    let b1 = BookmarkBuilder::default()
+        .href("https://framasoft.org/")
+        .add_date("1466009059")
+        .title("Framasoft ~ Page portail du réseau")
+        .build()
+        .unwrap();
+
+    let b2 = BookmarkBuilder::default()
+        .href("https://www.kernel.org/")
+        .add_date("1466009167")
+        .title("The Linux Kernel Archives")
+        .build()
+        .unwrap();
+
+    let netscape = Netscape {
+        title: label.clone(),
+        h1: label,
+        children: vec![Item::Shortcut(b1), Item::Shortcut(b2)],
+    };
+
+    assert_eq!(Netscape::from_file(path).unwrap(), netscape);
 }
 
 #[test]
@@ -148,4 +145,38 @@ fn serialize_json_netscape() {
     let netscape = Netscape::from_file(path).unwrap();
 
     assert_eq!(serde_json::to_string(&netscape).unwrap(), json)
+}
+
+#[test]
+fn render_netscape_html() {
+    use crate::bookmark::BookmarkBuilder;
+    use std::fs;
+
+    let label = String::from("Bookmarks");
+    let path = Path::new("./res/netscape.html");
+
+    let b1 = BookmarkBuilder::default()
+        .href("https://framasoft.org/")
+        .add_date("1466009059")
+        .title("Framasoft ~ Page portail du réseau")
+        .build()
+        .unwrap();
+
+    let b2 = BookmarkBuilder::default()
+        .href("https://www.kernel.org/")
+        .add_date("1466009167")
+        .title("The Linux Kernel Archives")
+        .build()
+        .unwrap();
+
+    let netscape = Netscape {
+        title: label.clone(),
+        h1: label,
+        children: vec![Item::Shortcut(b1), Item::Shortcut(b2)],
+    };
+
+    assert_eq!(
+        netscape.render().unwrap(),
+        fs::read_to_string(path).unwrap().trim()
+    )
 }
