@@ -63,7 +63,7 @@ impl Netscape {
         })
     }
 
-    pub fn from_string(raw: &str) -> Result<Self, Error> {
+    pub fn from_html(raw: &str) -> Result<Self, Error> {
         let node = parse_html().one(raw);
         Netscape::from_node(&node)
     }
@@ -75,8 +75,12 @@ impl Netscape {
             .and_then(|node| Netscape::from_node(&node))
     }
 
-    pub fn to_string(&self) -> String {
-        String::new()
+    pub fn to_html(&self) -> Result<String, askama::Error> {
+        self.render()
+    }
+
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string(self)
     }
 }
 
@@ -95,7 +99,7 @@ fn parse_netscape_header() {
     Do Not Edit! -->
     <Title>Collection Title</Title>
     <H1>Collection Head</H1>";
-    let netscape = Netscape::from_string(html).unwrap();
+    let netscape = Netscape::from_html(html).unwrap();
 
     assert_eq!(netscape.title, "Collection Title");
     assert_eq!(netscape.h1, "Collection Head");
@@ -144,7 +148,7 @@ fn serialize_json_netscape() {
     let path = Path::new("./res/netscape.html");
     let netscape = Netscape::from_file(path).unwrap();
 
-    assert_eq!(serde_json::to_string(&netscape).unwrap(), json)
+    assert_eq!(netscape.to_json().unwrap(), json)
 }
 
 #[test]
@@ -176,7 +180,7 @@ fn render_netscape_html() {
     };
 
     assert_eq!(
-        netscape.render().unwrap(),
+        netscape.to_html().unwrap(),
         fs::read_to_string(path).unwrap().trim()
     )
 }
