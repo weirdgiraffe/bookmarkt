@@ -1,4 +1,6 @@
+{#- BE CAREFUL, WHITESPACES ARE VERY IMPORTANT -#}
 <DT><A HREF="{{ href }}" ADD_DATE="{{ add_date }}"
 {%- if !last_visit.is_empty() %} LAST_VISIT="{{ last_visit }}"{%- endif -%}
 {%- if !last_modified.is_empty() %} LAST_MODIFIED="{{ last_modified }}"{%- endif -%}
+{%- if !icon.is_empty() %} ICON="{{ icon }}"{%- endif -%}
 >{{ title }}</A>

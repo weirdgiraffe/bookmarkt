@@ -137,8 +137,8 @@ fn parse_netscape_file() {
 
 #[test]
 fn serialize_json_netscape() {
-    let b1 = r#"{"href":"https://framasoft.org/","title":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":""}"#;
-    let b2 = r#"{"href":"https://www.kernel.org/","title":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":""}"#;
+    let b1 = r#"{"href":"https://framasoft.org/","title":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":"","icon":""}"#;
+    let b2 = r#"{"href":"https://www.kernel.org/","title":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":"","icon":""}"#;
 
     let json = format!(
         r#"{{"title":"Bookmarks","h1":"Bookmarks","children":[{},{}]}}"#,

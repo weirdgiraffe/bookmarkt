@@ -16,6 +16,8 @@ pub struct Bookmark {
     last_visit: String,
     #[builder(default)]
     last_modified: String,
+    #[builder(default)]
+    icon: String,
 }
 
 impl Bookmark {
@@ -44,6 +46,10 @@ impl Bookmark {
                 builder.last_modified(attribute.value);
             }
 
+            if let Some(attribute) = node.select_attribute("ICON") {
+                builder.icon(attribute.value);
+            }
+
             builder.title(node.text_contents());
 
             if let Ok(built) = builder.build() {
@@ -65,19 +71,22 @@ impl PartialEq for Bookmark {
     }
 }
 
-#[test]
-fn render_bookmark_html() {
-    let rendered =
-        r#"<DT><A HREF="url" ADD_DATE="date" LAST_VISIT="date" LAST_MODIFIED="date">name</A>"#;
-    let bookmark = Bookmark {
+#[allow(dead_code)]
+fn mock_bookmark() -> Bookmark {
+    Bookmark {
         href: String::from("url"),
         add_date: String::from("date"),
         last_visit: String::from("date"),
         last_modified: String::from("date"),
         title: String::from("name"),
-    };
+        icon: String::from("icon"),
+    }
+}
 
-    assert_eq!(bookmark.render().unwrap(), rendered);
+#[test]
+fn render_bookmark_html() {
+    let rendered = r#"<DT><A HREF="url" ADD_DATE="date" LAST_VISIT="date" LAST_MODIFIED="date" ICON="icon">name</A>"#;
+    assert_eq!(mock_bookmark().render().unwrap(), rendered);
 }
 
 #[test]
@@ -87,31 +96,16 @@ fn parse_netscape_bookmark() {
 
     let item = r#"
 <DT><A HREF="url" ADD_DATE="date" LAST_VISIT="date"
-LAST_MODIFIED="date">name</A>"#;
+LAST_MODIFIED="date" ICON="icon">name</A>"#;
     let a = parse_html().one(item).select_first("A").unwrap();
 
-    assert_eq!(
-        Bookmark::from_node(&a.as_node()).unwrap(),
-        Bookmark {
-            href: String::from("url"),
-            add_date: String::from("date"),
-            last_visit: String::from("date"),
-            last_modified: String::from("date"),
-            title: String::from("name")
-        }
-    )
+    assert_eq!(Bookmark::from_node(&a.as_node()).unwrap(), mock_bookmark())
 }
 
 #[test]
 fn serialize_json_bookmark() {
-    let json = r#"{"href":"url","title":"name","add_date":"date","last_visit":"date","last_modified":"date"}"#;
-    let bookmark = Bookmark {
-        href: String::from("url"),
-        add_date: String::from("date"),
-        last_visit: String::from("date"),
-        last_modified: String::from("date"),
-        title: String::from("name"),
-    };
+    let json = r#"{"href":"url","title":"name","add_date":"date","last_visit":"date","last_modified":"date","icon":"icon"}"#;
+    let bookmark = mock_bookmark();
 
     assert_eq!(serde_json::to_string(&bookmark).unwrap(), json)
 }
