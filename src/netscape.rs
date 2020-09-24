@@ -90,6 +90,34 @@ impl PartialEq for Netscape {
     }
 }
 
+#[allow(dead_code)]
+fn sanitize_file(path: &Path) -> String {
+    use std::fs::File;
+    use std::io::{BufRead, BufReader};
+
+    let file = File::open(path).unwrap();
+    let mut contents = String::new();
+
+    for line in BufReader::new(file).lines() {
+        if let Ok(content) = line {
+            contents.push_str(content.trim());
+        }
+    }
+
+    contents
+}
+
+#[allow(dead_code)]
+fn sanitize_string(string: String) -> String {
+    let mut contents = String::new();
+
+    for line in string.lines() {
+        contents.push_str(line.trim());
+    }
+
+    contents
+}
+
 #[test]
 fn parse_netscape_header() {
     let html = r"
@@ -182,5 +210,18 @@ fn render_netscape_html() {
     assert_eq!(
         netscape.to_html().unwrap(),
         fs::read_to_string(path).unwrap().trim()
+    )
+}
+
+#[test]
+fn roundtrip_chromium_html() {
+    let path = Path::new("./res/chromium.html");
+    let chromium = Netscape::from_file(path).unwrap();
+
+    println!("{}", chromium.to_json().unwrap());
+
+    assert_eq!(
+        sanitize_string(chromium.to_html().unwrap()),
+        sanitize_file(path)
     )
 }
