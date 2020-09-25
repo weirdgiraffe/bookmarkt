@@ -26,8 +26,10 @@ impl Bookmark {
         let mut builder = BookmarkBuilder::default();
 
         if node.is_element("DT") {
-            if let Ok(a) = node.select_first("A") {
-                bookmark = Bookmark::from_node(&a.as_node());
+            let a = node.children().find(|n| n.is_element("A"));
+
+            if let Some(node) = a {
+                bookmark = Bookmark::from_node(&node);
             }
         } else if node.is_element("A") {
             if let Some(attribute) = node.select_attribute("HREF") {

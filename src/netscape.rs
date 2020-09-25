@@ -38,20 +38,39 @@ impl Netscape {
         let mut h1 = String::new();
         let mut children = vec![];
 
-        if let Some(content) = node.select_text("TITLE") {
-            title = content
+        let mut head = None;
+        let mut body = None;
+
+        let html = node.children().find(|n| n.is_element("HTML"));
+
+        if let Some(root) = html {
+            for child in root.children() {
+                if child.is_element("HEAD") {
+                    head = Some(child);
+                } else if child.is_element("BODY") {
+                    body = Some(child);
+                }
+            }
         }
 
-        if let Some(content) = node.select_text("H1") {
-            h1 = content
+        if let Some(root) = head {
+            for child in root.children() {
+                if child.is_element("TITLE") {
+                    title = child.text_contents();
+                }
+            }
         }
 
-        if let Ok(selection) = node.select("DL > DT") {
-            for data in selection.collect::<Vec<_>>() {
-                let dt = data.as_node();
-
-                if let Some(item) = Item::from_node(&dt) {
-                    children.push(item)
+        if let Some(root) = body {
+            for child in root.children() {
+                if child.is_element("H1") {
+                    h1 = child.text_contents();
+                } else if child.is_element("DL") {
+                    for sub in child.children() {
+                        if let Some(item) = Item::from_node(&sub) {
+                            children.push(item);
+                        }
+                    }
                 }
             }
         }
@@ -218,7 +237,7 @@ fn roundtrip_chromium_html() {
     let path = Path::new("./res/chromium.html");
     let chromium = Netscape::from_file(path).unwrap();
 
-    println!("{}", chromium.to_json().unwrap());
+    //println!("{}", chromium.to_json().unwrap());
 
     assert_eq!(
         sanitize_string(chromium.to_html().unwrap()),

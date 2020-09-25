@@ -6,7 +6,7 @@ use crate::item::Item;
 use crate::node_ref_ext::*;
 
 #[derive(Serialize, Clone, Builder, Debug, Default, Template)]
-#[template(path = "folder.j2")]
+#[template(path = "folder.j2", escape = "none")]
 #[builder(setter(into))]
 pub struct Folder {
     title: String,
@@ -21,8 +21,10 @@ impl Folder {
         let mut folder = None;
 
         if node.is_element("DT") {
-            if let Ok(h3) = node.select_first("H3") {
-                folder = Folder::from_node(&h3.as_node());
+            let h3 = node.children().find(|n| n.is_element("H3"));
+
+            if let Some(node) = h3 {
+                folder = Folder::from_node(&node);
             }
         } else if node.is_element("H3") {
             let mut builder = FolderBuilder::default();
