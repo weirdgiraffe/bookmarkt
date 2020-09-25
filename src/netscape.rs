@@ -237,20 +237,22 @@ fn roundtrip_chromium_html() {
     let path = Path::new("./res/chromium.html");
     let chromium = Netscape::from_file(path).unwrap();
 
-    assert_eq!(
-        sanitize_string(chromium.to_html().unwrap()),
-        sanitize_file(path)
-    )
+    let imported = sanitize_file(path);
+    let mut parsed = sanitize_string(chromium.to_html().unwrap());
+
+    // the chromium import add a last <p> tag
+    parsed.push_str("<p>");
+
+    assert_eq!(imported, parsed)
 }
 
 #[test]
 fn roundtrip_firefox_html() {
     let path = Path::new("./res/firefox.html");
     let firefox = Netscape::from_file(path).unwrap();
-    let mut imported = sanitize_file(path);
 
-    // the firefox import skip the last <p> tag
-    imported.push_str("<p>");
+    let imported = sanitize_file(path);
+    let parsed = sanitize_string(firefox.to_html().unwrap());
 
-    assert_eq!(sanitize_string(firefox.to_html().unwrap()), imported)
+    assert_eq!(parsed, imported)
 }
