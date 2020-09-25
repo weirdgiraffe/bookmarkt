@@ -17,6 +17,8 @@ pub struct Bookmark {
     #[builder(default)]
     last_modified: String,
     #[builder(default)]
+    icon_uri: String,
+    #[builder(default)]
     icon: String,
 }
 
@@ -46,6 +48,10 @@ impl Bookmark {
 
             if let Some(attribute) = node.select_attribute("LAST_MODIFIED") {
                 builder.last_modified(attribute.value);
+            }
+
+            if let Some(attribute) = node.select_attribute("ICON_URI") {
+                builder.icon_uri(attribute.value);
             }
 
             if let Some(attribute) = node.select_attribute("ICON") {
@@ -81,6 +87,7 @@ fn mock_bookmark() -> Bookmark {
         last_visit: String::from("date"),
         last_modified: String::from("date"),
         title: String::from("name"),
+        icon_uri: String::from(""),
         icon: String::from("icon"),
     }
 }
@@ -106,7 +113,7 @@ LAST_MODIFIED="date" ICON="icon">name</A>"#;
 
 #[test]
 fn serialize_json_bookmark() {
-    let json = r#"{"href":"url","title":"name","add_date":"date","last_visit":"date","last_modified":"date","icon":"icon"}"#;
+    let json = r#"{"href":"url","title":"name","add_date":"date","last_visit":"date","last_modified":"date","icon_uri":"","icon":"icon"}"#;
     let bookmark = mock_bookmark();
 
     assert_eq!(serde_json::to_string(&bookmark).unwrap(), json)
