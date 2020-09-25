@@ -184,8 +184,8 @@ fn parse_netscape_file() {
 
 #[test]
 fn serialize_json_netscape() {
-    let b1 = r#"{"href":"https://framasoft.org/","title":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":"","icon":""}"#;
-    let b2 = r#"{"href":"https://www.kernel.org/","title":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":"","icon":""}"#;
+    let b1 = r#"{"href":"https://framasoft.org/","title":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":"","icon_uri":"","icon":""}"#;
+    let b2 = r#"{"href":"https://www.kernel.org/","title":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":"","icon_uri":"","icon":""}"#;
 
     let json = format!(
         r#"{{"title":"Bookmarks","h1":"Bookmarks","children":[{},{}]}}"#,
@@ -241,4 +241,16 @@ fn roundtrip_chromium_html() {
         sanitize_string(chromium.to_html().unwrap()),
         sanitize_file(path)
     )
+}
+
+#[test]
+fn roundtrip_firefox_html() {
+    let path = Path::new("./res/firefox.html");
+    let firefox = Netscape::from_file(path).unwrap();
+    let mut imported = sanitize_file(path);
+
+    // the firefox import skip the last <p> tag
+    imported.push_str("<p>");
+
+    assert_eq!(sanitize_string(firefox.to_html().unwrap()), imported)
 }
