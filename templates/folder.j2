@@ -1,4 +1,10 @@
-<DT><H3 FOLDED ADD_DATE="{{ add_date }}">{{ title }}</H3>
+{#- BE CAREFUL, WHITESPACES ARE VERY IMPORTANT -#}
+<DT><H3
+{%- if folded %} FOLDED{%- endif -%}
+{%- if !add_date.is_empty() %} ADD_DATE="{{ add_date }}"{%- endif -%}
+{%- if !last_modified.is_empty() %} LAST_MODIFIED="{{ last_modified }}"{%- endif -%}
+{%- if personal_toolbar_folder %} PERSONAL_TOOLBAR_FOLDER="true"{%- endif -%}
+>{{ title }}</H3>
 <DL><p>
 {%- include "children.j2" %}
-</DL></p>
+</DL><p>

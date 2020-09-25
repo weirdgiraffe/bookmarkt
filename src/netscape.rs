@@ -237,8 +237,6 @@ fn roundtrip_chromium_html() {
     let path = Path::new("./res/chromium.html");
     let chromium = Netscape::from_file(path).unwrap();
 
-    //println!("{}", chromium.to_json().unwrap());
-
     assert_eq!(
         sanitize_string(chromium.to_html().unwrap()),
         sanitize_file(path)
