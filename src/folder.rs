@@ -19,6 +19,8 @@ pub struct Folder {
     last_modified: String,
     #[builder(default = "false")]
     personal_toolbar_folder: bool,
+    #[builder(default = "false")]
+    unfiled_bookmarks_folder: bool,
     #[builder(default)]
     children: Vec<Item>,
 }
@@ -50,6 +52,10 @@ impl Folder {
 
             if node.select_attribute("PERSONAL_TOOLBAR_FOLDER").is_some() {
                 builder.personal_toolbar_folder(true);
+            }
+
+            if node.select_attribute("UNFILED_BOOKMARKS_FOLDER").is_some() {
+                builder.unfiled_bookmarks_folder(true);
             }
 
             builder.title(node.text_contents());
@@ -94,6 +100,7 @@ fn render_folder_html() {
         title: String::from("name"),
         folded: true,
         personal_toolbar_folder: false,
+        unfiled_bookmarks_folder: false,
         last_modified: String::from("date"),
         add_date: String::from("date"),
         children: vec![],
@@ -119,6 +126,7 @@ fn parse_netscape_empty_folder() {
             title: String::from("title"),
             folded: true,
             personal_toolbar_folder: false,
+            unfiled_bookmarks_folder: false,
             last_modified: String::from("date"),
             add_date: String::from("date"),
             children: vec![]
@@ -180,11 +188,12 @@ fn parse_netscape_nested_folders() {
 
 #[test]
 fn serialize_json_folder() {
-    let json = r#"{"title":"title","folded":false,"add_date":"date","last_modified":"date","personal_toolbar_folder":true,"children":[]}"#;
+    let json = r#"{"title":"title","folded":false,"add_date":"date","last_modified":"date","personal_toolbar_folder":true,"unfiled_bookmarks_folder":false,"children":[]}"#;
     let folder = Folder {
         title: String::from("title"),
         folded: false,
         personal_toolbar_folder: true,
+        unfiled_bookmarks_folder: false,
         add_date: String::from("date"),
         last_modified: String::from("date"),
         children: vec![],

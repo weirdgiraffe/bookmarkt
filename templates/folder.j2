@@ -4,6 +4,7 @@
 {%- if !add_date.is_empty() %} ADD_DATE="{{ add_date }}"{%- endif -%}
 {%- if !last_modified.is_empty() %} LAST_MODIFIED="{{ last_modified }}"{%- endif -%}
 {%- if personal_toolbar_folder %} PERSONAL_TOOLBAR_FOLDER="true"{%- endif -%}
+{%- if unfiled_bookmarks_folder %} UNFILED_BOOKMARKS_FOLDER="true"{%- endif -%}
 >{{ title }}</H3>
 <DL><p>
 {%- include "children.j2" %}
