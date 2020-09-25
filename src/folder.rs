@@ -9,9 +9,16 @@ use crate::node_ref_ext::*;
 #[template(path = "folder.j2", escape = "none")]
 #[builder(setter(into))]
 pub struct Folder {
+    #[builder(default)]
     title: String,
+    #[builder(default = "false")]
+    folded: bool,
     #[builder(default)]
     add_date: String,
+    #[builder(default)]
+    last_modified: String,
+    #[builder(default = "false")]
+    personal_toolbar_folder: bool,
     #[builder(default)]
     children: Vec<Item>,
 }
@@ -29,8 +36,20 @@ impl Folder {
         } else if node.is_element("H3") {
             let mut builder = FolderBuilder::default();
 
+            if node.select_attribute("FOLDED").is_some() {
+                builder.folded(true);
+            }
+
             if let Some(attribute) = node.select_attribute("ADD_DATE") {
                 builder.add_date(attribute.value);
+            }
+
+            if let Some(attribute) = node.select_attribute("LAST_MODIFIED") {
+                builder.last_modified(attribute.value);
+            }
+
+            if node.select_attribute("PERSONAL_TOOLBAR_FOLDER").is_some() {
+                builder.personal_toolbar_folder(true);
             }
 
             builder.title(node.text_contents());
@@ -68,12 +87,15 @@ impl PartialEq for Folder {
 
 #[test]
 fn render_folder_html() {
-    let rendered = r#"<DT><H3 FOLDED ADD_DATE="date">name</H3>
+    let rendered = r#"<DT><H3 FOLDED ADD_DATE="date" LAST_MODIFIED="date">name</H3>
 <DL><p>
-</DL></p>"#;
+</DL><p>"#;
     let folder = Folder {
-        add_date: String::from("date"),
         title: String::from("name"),
+        folded: true,
+        personal_toolbar_folder: false,
+        last_modified: String::from("date"),
+        add_date: String::from("date"),
         children: vec![],
     };
 
@@ -86,7 +108,7 @@ fn parse_netscape_empty_folder() {
     use kuchiki::traits::TendrilSink;
 
     let item = r#"
-    <DT><H3 FOLDED ADD_DATE="date">title</H3>
+    <DT><H3 FOLDED ADD_DATE="date" LAST_MODIFIED="date">title</H3>
     <DL><p>
     </DL><p>"#;
     let h3 = parse_html().one(item).select_first("H3").unwrap();
@@ -95,6 +117,9 @@ fn parse_netscape_empty_folder() {
         Folder::from_node(&h3.as_node()).unwrap(),
         Folder {
             title: String::from("title"),
+            folded: true,
+            personal_toolbar_folder: false,
+            last_modified: String::from("date"),
             add_date: String::from("date"),
             children: vec![]
         }
@@ -155,10 +180,13 @@ fn parse_netscape_nested_folders() {
 
 #[test]
 fn serialize_json_folder() {
-    let json = r#"{"title":"title","add_date":"date","children":[]}"#;
+    let json = r#"{"title":"title","folded":false,"add_date":"date","last_modified":"date","personal_toolbar_folder":true,"children":[]}"#;
     let folder = Folder {
         title: String::from("title"),
+        folded: false,
+        personal_toolbar_folder: true,
         add_date: String::from("date"),
+        last_modified: String::from("date"),
         children: vec![],
     };
 
