@@ -10,7 +10,7 @@ in
 with nixpkgs;
 
 stdenv.mkDerivation {
-  name = "bookmarket";
+  name = "bookmarkt";
 
   nativeBuildInput = [
     binutils gcc gnumake openssl pkgconfig # common deps
