@@ -1,3 +1,4 @@
+//! Contains the [Folder] model and its associated tests.
 use askama::Template;
 use kuchiki::NodeRef;
 use serde::Serialize;
@@ -5,27 +6,43 @@ use serde::Serialize;
 use crate::item::Item;
 use crate::node_ref_ext::*;
 
+/// Parses the item formated as a `subfolder`. By nature, the [Folder] are nested structures.
 #[derive(Serialize, Clone, Builder, Debug, Default, Template)]
 #[template(path = "folder.j2", escape = "none")]
 #[builder(setter(into))]
 pub struct Folder {
+    /// The `title` represents the subfolder's title, it is usually encapsulated by an `<H3/>` tag.
     #[builder(default)]
     title: String,
+
+    /// The `folded` attribute should indicate that the folder should be displayed as folded.
     #[builder(default = "false")]
     folded: bool,
+
+    /// The `add_date` attribute is the date when the item was created (in UNIX time).
     #[builder(default)]
     add_date: String,
+
+    /// The `last_modified` attribute is the date of the last modification of the item (in UNIX time).
     #[builder(default)]
     last_modified: String,
+
+    /// The `personal_toolbar_folder` attribute represents if a folder is the bookmark toolbar folder.
     #[builder(default = "false")]
     personal_toolbar_folder: bool,
+
+    /// The `personal_toolbar_folder` attribute represents if a folder is the bookmark toolbar folder.
     #[builder(default = "false")]
     unfiled_bookmarks_folder: bool,
+
+    /// In contrast to the other items, a [Folder] has a `children` attribute that contains all its nested items.
+    /// The `children` [Vec] stores all the subfolder's items in the **same** order than the initial bookmarks organization.
     #[builder(default)]
     children: Vec<Item>,
 }
 
 impl Folder {
+    /// Creates a [Folder] model from a parsed HTML DOM.
     pub fn from_node(node: &NodeRef) -> Option<Self> {
         let mut folder = None;
 

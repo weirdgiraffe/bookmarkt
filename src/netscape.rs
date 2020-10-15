@@ -1,3 +1,4 @@
+//! Contains the [Netscape] model and its associated tests.
 use askama::Template;
 use std::io::Error;
 use std::path::Path;
@@ -27,12 +28,38 @@ use crate::node_ref_ext::*;
 #[derive(Serialize, Debug, Template)]
 #[template(path = "netscape.j2", escape = "none")]
 pub struct Netscape {
+    /// The `title` attribute stores the bookmark document's title, it is the content of the meta tag `<TITLE/>`.
     pub title: String,
+
+    /// The `h1` attribute stores the root document's title, it is the content of the tag `<H1/>`.
+    /// Usually, the `title` and the `h1` attributes have the same content.
     pub h1: String,
+
+    /// The `children` [Vec] stores all the nested items of the document.
+    /// It keeps the **same** order than the initial bookmarks organization.
     pub children: Vec<Item>,
 }
 
 impl Netscape {
+    /// Creates a [Netscape] model from a file path.
+    /// It should be priviledged to transform a Netscape File document.
+    ///
+    /// ```rust
+    /// use bookmarkt::netscape::Netscape;
+    /// use std::path::Path;
+    ///
+    /// let path = Path::new("./res/chromium.html");
+    /// let chromium = Netscape::from_file(path).unwrap();
+    ///
+    /// println!("{:?}", chromium);
+    pub fn from_file(path: &Path) -> Result<Self, Error> {
+        parse_html()
+            .from_utf8()
+            .from_file(path)
+            .and_then(|node| Netscape::from_node(&node))
+    }
+
+    /// Creates a [Netscape] model from a parsed a Netscape File DOM
     pub fn from_node(node: &NodeRef) -> Result<Self, Error> {
         let mut title = String::new();
         let mut h1 = String::new();
@@ -82,22 +109,35 @@ impl Netscape {
         })
     }
 
+    /// Creates a [Netscape] model from a raw HTML string.
+    ///
+    /// It is useful for testing.
+    ///
+    /// ```rust
+    /// use bookmarkt::netscape::Netscape;
+    ///
+    /// let html = r"
+    /// <!DOCTYPE NETSCAPE-Bookmark-file-1>
+    /// <!--This is an automatically generated file.
+    /// It will be read and overwritten.
+    /// Do Not Edit! -->
+    /// <Title>Collection Title</Title>
+    /// <H1>Collection Head</H1>";
+    /// let netscape = Netscape::from_html(html).unwrap();
+    ///
+    /// assert_eq!(netscape.title, "Collection Title");
+    /// ```
     pub fn from_html(raw: &str) -> Result<Self, Error> {
         let node = parse_html().one(raw);
         Netscape::from_node(&node)
     }
 
-    pub fn from_file(path: &Path) -> Result<Self, Error> {
-        parse_html()
-            .from_utf8()
-            .from_file(path)
-            .and_then(|node| Netscape::from_node(&node))
-    }
-
+    /// Renders the [Netscape] model as a HTML string.
     pub fn to_html(&self) -> Result<String, askama::Error> {
         self.render()
     }
 
+    /// Renders the [Netscape] model as a JSON representation.
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(self)
     }

@@ -13,8 +13,26 @@
 //! use serde_json;
 //! use std::path::Path;
 //!
-//! let parsed = Netscape::from_file(Path::new("./res/netscape.html")).unwrap();
-//! println!("{:?}", serde_json::to_string(&parsed).unwrap());
+//! let path = Path::new("./res/netscape.html");
+//! let parsed = Netscape::from_file(path).unwrap();
+//!
+//! assert_eq!(parsed.title, "Bookmarks");
+//! assert_eq!(parsed.children.len(), 2);
+//! ```
+//!
+//! The bookmarkt structures also support the *import* and *export* features.
+//!
+//! ```rust
+//! use bookmarkt::netscape::Netscape;
+//! use serde_json;
+//! use std::path::Path;
+//!
+//! let path = Path::new("./res/firefox.html");
+//! let imported = Netscape::from_file(path).unwrap();
+//! let exported = imported.to_html().unwrap();
+//! let reimported = Netscape::from_html(&exported).unwrap();
+//!
+//! assert_eq!(imported, reimported);
 //! ```
 //!
 //! # Acknowledgment
@@ -25,9 +43,14 @@
 //!
 //! I really appreciate these works and I hope you appreciate them too ;).
 //!
+//! I also took some ideas from these libraries :
+//! * [Netscape-Bookmarks-File-Parser](https://github.com/FlyingWolFox/Netscape-Bookmarks-File-Parser)
+//!
 //! # Contributing
 //!
 //! Open a ticket on the [`bookmarkt` tracker](https://todo.sr.ht/~vlnk/bookmarkt).
+
+#![deny(missing_docs)]
 
 #[macro_use]
 extern crate derive_builder;

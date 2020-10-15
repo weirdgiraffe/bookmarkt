@@ -1,17 +1,28 @@
+//! Contains the [Item] enum that dispatches all the implementations of the items.
 use kuchiki::NodeRef;
 use serde::Serialize;
 
 use crate::bookmark::Bookmark;
 use crate::folder::Folder;
 
+/// Represents all available item types of the Microsoft's Netscape Bookmark File format.
+///
+/// * TODO The `feed` item should represent a RSS feed.
+/// * TODO The `web slice` item represents a legacy [Web Slice] object.
+///
+/// [Web Slice]: https://docs.microsoft.com/en-us/previous-versions/windows/desktop/cc956158(v=vs.85)
 #[derive(Clone, Debug, Serialize)]
 #[serde(untagged)]
 pub enum Item {
+    /// The `Subfolder` item is implemented by the [Folder] struct.
     Subfolder(Folder),
+
+    /// The `Shortcut` item is represented by a [Bookmark].
     Shortcut(Bookmark),
 }
 
 impl Item {
+    /// Creates a [Folder] or a [Bookmark] models from any given item.
     pub fn from_node(node: &NodeRef) -> Option<Self> {
         if let Some(bookmark) = Bookmark::from_node(node) {
             Some(Item::Shortcut(bookmark))

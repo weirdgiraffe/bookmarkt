@@ -1,28 +1,45 @@
+//! Contains the [Bookmark] model and its associated tests.
 use askama::Template;
 use kuchiki::NodeRef;
 use serde::Serialize;
 
 use crate::node_ref_ext::*;
 
+/// Implements the specification of the `shortcut` item.
 #[derive(Serialize, Builder, Clone, Debug, Default, Template)]
 #[builder(setter(into))]
 #[template(path = "bookmark.j2", escape = "none")]
 pub struct Bookmark {
-    href: String,
-    title: String,
+    /// The `href` attribute stores the url to the page of the shortcut.
+    pub href: String,
+
+    /// The `title` attribute stores the shortcut's title, it is the `<A/>` content.
+    pub title: String,
+
+    /// The `add_date` attribute is the date when the item was created (in UNIX time).
     #[builder(default)]
-    add_date: String,
+    pub add_date: String,
+
+    /// The `last_visit` attribute is the date of the last visit to the site of the shortcut (in UNIX time).
     #[builder(default)]
-    last_visit: String,
+    pub last_visit: String,
+
+    /// The `last_modified` attribute is the date of the last modification of the item (in UNIX time).
     #[builder(default)]
-    last_modified: String,
+    pub last_modified: String,
+
+    /// The `icon_uri` attribute represents the url of the `favicon.ico` of the domain.
     #[builder(default)]
-    icon_uri: String,
+    pub icon_uri: String,
+
+    /// The `icon` encodes an image with the format `data:image/{format};{encoding}`.
+    /// It is usually a png encoded in base64.
     #[builder(default)]
-    icon: String,
+    pub icon: String,
 }
 
 impl Bookmark {
+    /// Creates a [Bookmark] model from a parsed HTML DOM.
     pub fn from_node(node: &NodeRef) -> Option<Self> {
         let mut bookmark = None;
         let mut builder = BookmarkBuilder::default();
