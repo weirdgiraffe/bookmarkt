@@ -2,8 +2,8 @@
 use kuchiki::NodeRef;
 use serde::Serialize;
 
-use crate::bookmark::Bookmark;
-use crate::folder::Folder;
+use crate::Bookmark;
+use crate::Folder;
 
 /// Represents all available item types of the Microsoft's Netscape Bookmark File format.
 ///

@@ -9,7 +9,7 @@
 //! In order to parse a *bookmark file*, you should use the [Netscape] struct.
 //!
 //! ```rust
-//! use bookmarkt::netscape::Netscape;
+//! use bookmarkt::Netscape;
 //! use serde_json;
 //! use std::path::Path;
 //!
@@ -23,7 +23,7 @@
 //! The bookmarkt structures also support the *import* and *export* features.
 //!
 //! ```rust
-//! use bookmarkt::netscape::Netscape;
+//! use bookmarkt::Netscape;
 //! use serde_json;
 //! use std::path::Path;
 //!
@@ -55,10 +55,14 @@
 #[macro_use]
 extern crate derive_builder;
 
-pub mod bookmark;
-pub mod folder;
-pub mod item;
-pub mod netscape;
+mod item;
+mod items;
 mod node_ref_ext;
 
+mod bookmark;
+mod folder;
+mod netscape;
+
+pub use bookmark::Bookmark;
+pub use folder::Folder;
 pub use netscape::Netscape;

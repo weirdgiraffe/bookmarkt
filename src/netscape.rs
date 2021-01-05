@@ -1,16 +1,17 @@
 //! Contains the [Netscape] model and its associated tests.
 use askama::Template;
-use std::io::Error;
-use std::path::Path;
-
 use kuchiki::parse_html;
 use kuchiki::traits::TendrilSink;
 use kuchiki::NodeRef;
-
 use serde::Serialize;
+use std::io::Error;
+use std::path::Path;
 
 use crate::item::Item;
+use crate::items::Items;
 use crate::node_ref_ext::*;
+use crate::Bookmark;
+use crate::Folder;
 
 /// Implements the [Netscape Bookmark File format].
 ///
@@ -37,7 +38,7 @@ pub struct Netscape {
 
     /// The `children` [Vec] stores all the nested items of the document.
     /// It keeps the **same** order than the initial bookmarks organization.
-    pub children: Vec<Item>,
+    pub children: Items,
 }
 
 impl Netscape {
@@ -45,7 +46,7 @@ impl Netscape {
     /// It should be priviledged to transform a Netscape File document.
     ///
     /// ```rust
-    /// use bookmarkt::netscape::Netscape;
+    /// use bookmarkt::Netscape;
     /// use std::path::Path;
     ///
     /// let path = Path::new("./res/chromium.html");
@@ -114,7 +115,7 @@ impl Netscape {
     /// It is useful for testing.
     ///
     /// ```rust
-    /// use bookmarkt::netscape::Netscape;
+    /// use bookmarkt::Netscape;
     ///
     /// let html = r"
     /// <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -140,6 +141,18 @@ impl Netscape {
     /// Renders the [Netscape] model as a JSON representation.
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(self)
+    }
+
+    /// Gets all nested [Bookmark]s of the document
+    pub fn all_bookmarks(&self) -> Vec<&Bookmark> {
+        use crate::items::ItemCollection;
+        self.children.shortcuts()
+    }
+
+    /// Gets all nested [Folder]s of the document
+    pub fn all_folders(&self) -> Vec<&Folder> {
+        use crate::items::ItemCollection;
+        self.children.subfolders()
     }
 }
 

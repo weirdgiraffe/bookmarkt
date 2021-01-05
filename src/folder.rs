@@ -4,6 +4,7 @@ use kuchiki::NodeRef;
 use serde::Serialize;
 
 use crate::item::Item;
+use crate::items::Items;
 use crate::node_ref_ext::*;
 
 /// Parses the item formated as a `subfolder`. By nature, the [Folder] are nested structures.
