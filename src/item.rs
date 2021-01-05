@@ -32,6 +32,38 @@ impl Item {
             None
         }
     }
+
+    /// Checks if the item is a shortcut
+    pub fn is_shortcut(&self) -> bool {
+        match self {
+            Item::Subfolder(_) => false,
+            Item::Shortcut(_) => true,
+        }
+    }
+
+    /// Takes a [Bookmark] out of the shortcut item
+    pub fn take_shortcut(&self) -> Option<&Bookmark> {
+        match self {
+            Item::Subfolder(_) => None,
+            Item::Shortcut(bookmark) => Some(bookmark),
+        }
+    }
+
+    /// Checks if the item is a subfolder
+    pub fn is_subfolder(&self) -> bool {
+        match self {
+            Item::Subfolder(_) => true,
+            Item::Shortcut(_) => false,
+        }
+    }
+
+    /// Takes a [Folder] out of the subfolder item
+    pub fn take_subfolder(&self) -> Option<&Folder> {
+        match self {
+            Item::Subfolder(folder) => Some(folder),
+            Item::Shortcut(_) => None,
+        }
+    }
 }
 
 impl PartialEq for Item {
