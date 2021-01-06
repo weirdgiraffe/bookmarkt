@@ -4,7 +4,6 @@ use kuchiki::NodeRef;
 use serde::Serialize;
 
 use crate::item::Item;
-use crate::items::Items;
 use crate::node_ref_ext::*;
 
 /// Parses the item formated as a `subfolder`. By nature, the [Folder] are nested structures.
@@ -39,7 +38,7 @@ pub struct Folder {
     /// In contrast to the other items, a [Folder] has a `children` attribute that contains all its nested items.
     /// The `children` [Vec] stores all the subfolder's items in the **same** order than the initial bookmarks organization.
     #[builder(default)]
-    pub children: Items,
+    pub children: Vec<Item>,
 }
 
 impl Folder {

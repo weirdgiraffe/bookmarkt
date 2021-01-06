@@ -3,11 +3,8 @@ use crate::item::Item;
 use crate::Bookmark;
 use crate::Folder;
 
-/// Alias the [Items] collection as a Vec<Item>.
-pub type Items = Vec<Item>;
-
 /// Declares the selectors that collects all nested item of a specified type.
-pub trait ItemCollection {
+pub trait NestedCollection {
     /// Collects all nested [Bookmark]s of the folder
     fn shortcuts(&self) -> Vec<&Bookmark>;
 
@@ -15,7 +12,7 @@ pub trait ItemCollection {
     fn subfolders(&self) -> Vec<&Folder>;
 }
 
-impl ItemCollection for Items {
+impl NestedCollection for Vec<Item> {
     fn shortcuts(&self) -> Vec<&Bookmark> {
         let mut all = vec![];
 
@@ -44,7 +41,7 @@ impl ItemCollection for Items {
 }
 
 #[test]
-fn get_all_nested_items() {
+fn should_get_all_nested_items() {
     use crate::bookmark::BookmarkBuilder;
     use crate::folder::FolderBuilder;
 

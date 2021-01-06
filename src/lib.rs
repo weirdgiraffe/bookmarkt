@@ -55,8 +55,8 @@
 #[macro_use]
 extern crate derive_builder;
 
+mod collection;
 mod item;
-mod items;
 mod node_ref_ext;
 
 mod bookmark;

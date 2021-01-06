@@ -7,9 +7,10 @@ use serde::Serialize;
 use std::io::Error;
 use std::path::Path;
 
+use crate::collection::NestedCollection;
 use crate::item::Item;
-use crate::items::Items;
 use crate::node_ref_ext::*;
+
 use crate::Bookmark;
 use crate::Folder;
 
@@ -38,7 +39,7 @@ pub struct Netscape {
 
     /// The `children` [Vec] stores all the nested items of the document.
     /// It keeps the **same** order than the initial bookmarks organization.
-    pub children: Items,
+    pub children: Vec<Item>,
 }
 
 impl Netscape {
@@ -145,13 +146,11 @@ impl Netscape {
 
     /// Gets all nested [Bookmark]s of the document
     pub fn all_bookmarks(&self) -> Vec<&Bookmark> {
-        use crate::items::ItemCollection;
         self.children.shortcuts()
     }
 
     /// Gets all nested [Folder]s of the document
     pub fn all_folders(&self) -> Vec<&Folder> {
-        use crate::items::ItemCollection;
         self.children.subfolders()
     }
 }
