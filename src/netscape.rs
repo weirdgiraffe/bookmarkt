@@ -145,12 +145,32 @@ impl Netscape {
     }
 
     /// Gets all nested [Bookmark]s of the document
-    pub fn all_bookmarks(&self) -> Vec<&Bookmark> {
+    ///
+    /// ```rust
+    /// use bookmarkt::Netscape;
+    /// use std::path::Path;
+    ///
+    /// let path = Path::new("./res/chromium.html");
+    /// let chromium = Netscape::from_file(path).unwrap();
+    ///
+    /// assert_eq!(chromium.get_bookmarks().len(), 6);
+    /// ```
+    pub fn get_bookmarks(&self) -> Vec<&Bookmark> {
         self.children.shortcuts()
     }
 
     /// Gets all nested [Folder]s of the document
-    pub fn all_folders(&self) -> Vec<&Folder> {
+    ///
+    /// ```rust
+    /// use bookmarkt::Netscape;
+    /// use std::path::Path;
+    ///
+    /// let path = Path::new("./res/chromium.html");
+    /// let chromium = Netscape::from_file(path).unwrap();
+    ///
+    /// assert_eq!(chromium.get_folders().len(), 3);
+    /// ```
+    pub fn get_folders(&self) -> Vec<&Folder> {
         self.children.subfolders()
     }
 }

@@ -4,6 +4,7 @@ use crate::Bookmark;
 use crate::Folder;
 
 /// Declares the selectors that collects all nested item of a specified type.
+/// It implements a way to collect every items of type from the [Netscape] structure.
 pub trait NestedCollection {
     /// Collects all nested [Bookmark]s of the folder
     fn shortcuts(&self) -> Vec<&Bookmark>;
