@@ -110,13 +110,13 @@ fn mock_bookmark() -> Bookmark {
 }
 
 #[test]
-fn render_bookmark_html() {
+fn should_render_bookmark_html() {
     let rendered = r#"<DT><A HREF="url" ADD_DATE="date" LAST_VISIT="date" LAST_MODIFIED="date" ICON="icon">name</A>"#;
     assert_eq!(mock_bookmark().render().unwrap(), rendered);
 }
 
 #[test]
-fn parse_netscape_bookmark() {
+fn should_parse_netscape_bookmark() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
@@ -129,7 +129,7 @@ LAST_MODIFIED="date" ICON="icon">name</A>"#;
 }
 
 #[test]
-fn serialize_json_bookmark() {
+fn should_serialize_json_bookmark() {
     let json = r#"{"href":"url","title":"name","add_date":"date","last_visit":"date","last_modified":"date","icon_uri":"","icon":"icon"}"#;
     let bookmark = mock_bookmark();
 

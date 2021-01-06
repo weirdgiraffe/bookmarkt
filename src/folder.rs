@@ -109,7 +109,7 @@ impl PartialEq for Folder {
 }
 
 #[test]
-fn render_folder_html() {
+fn should_render_folder_html() {
     let rendered = r#"<DT><H3 FOLDED ADD_DATE="date" LAST_MODIFIED="date">name</H3>
 <DL><p>
 </DL><p>"#;
@@ -127,7 +127,7 @@ fn render_folder_html() {
 }
 
 #[test]
-fn parse_netscape_empty_folder() {
+fn should_parse_netscape_empty_folder() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
@@ -152,7 +152,7 @@ fn parse_netscape_empty_folder() {
 }
 
 #[test]
-fn parse_netscape_nested_folders() {
+fn should_parse_netscape_nested_folders() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
@@ -204,7 +204,7 @@ fn parse_netscape_nested_folders() {
 }
 
 #[test]
-fn serialize_json_folder() {
+fn should_serialize_json_folder() {
     let json = r#"{"title":"title","folded":false,"add_date":"date","last_modified":"date","personal_toolbar_folder":true,"unfiled_bookmarks_folder":false,"children":[]}"#;
     let folder = Folder {
         title: String::from("title"),

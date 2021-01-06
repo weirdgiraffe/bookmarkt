@@ -190,7 +190,7 @@ fn sanitize_string(string: String) -> String {
 }
 
 #[test]
-fn parse_netscape_header() {
+fn should_parse_netscape_header() {
     let html = r"
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
     <!--This is an automatically generated file.
@@ -205,7 +205,7 @@ fn parse_netscape_header() {
 }
 
 #[test]
-fn parse_netscape_file() {
+fn should_parse_netscape_file() {
     use crate::bookmark::BookmarkBuilder;
 
     let path = Path::new("./res/netscape.html");
@@ -235,7 +235,7 @@ fn parse_netscape_file() {
 }
 
 #[test]
-fn serialize_json_netscape() {
+fn should_serialize_json_netscape() {
     let b1 = r#"{"href":"https://framasoft.org/","title":"Framasoft ~ Page portail du réseau","add_date":"1466009059","last_visit":"","last_modified":"","icon_uri":"","icon":""}"#;
     let b2 = r#"{"href":"https://www.kernel.org/","title":"The Linux Kernel Archives","add_date":"1466009167","last_visit":"","last_modified":"","icon_uri":"","icon":""}"#;
 
@@ -251,7 +251,7 @@ fn serialize_json_netscape() {
 }
 
 #[test]
-fn render_netscape_html() {
+fn should_render_netscape_html() {
     use crate::bookmark::BookmarkBuilder;
     use std::fs;
 
@@ -285,7 +285,7 @@ fn render_netscape_html() {
 }
 
 #[test]
-fn roundtrip_chromium_html() {
+fn should_roundtrip_chromium_html() {
     let path = Path::new("./res/chromium.html");
     let chromium = Netscape::from_file(path).unwrap();
 
@@ -299,7 +299,7 @@ fn roundtrip_chromium_html() {
 }
 
 #[test]
-fn roundtrip_firefox_html() {
+fn should_roundtrip_firefox_html() {
     let path = Path::new("./res/firefox.html");
     let firefox = Netscape::from_file(path).unwrap();
 

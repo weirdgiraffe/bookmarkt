@@ -54,7 +54,7 @@ impl NodeRefExt for NodeRef {
 }
 
 #[test]
-fn check_dl_element() {
+fn should_check_dl_element() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
@@ -65,7 +65,7 @@ fn check_dl_element() {
 }
 
 #[test]
-fn select_href_attribute() {
+fn should_select_href_attribute() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
@@ -79,7 +79,7 @@ fn select_href_attribute() {
 }
 
 #[test]
-fn ignore_selector_case() {
+fn should_ignore_selector_case() {
     use kuchiki::parse_html;
     use kuchiki::traits::TendrilSink;
 
