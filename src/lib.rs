@@ -65,4 +65,5 @@ mod netscape;
 
 pub use bookmark::Bookmark;
 pub use folder::Folder;
+pub use item::Item;
 pub use netscape::Netscape;
